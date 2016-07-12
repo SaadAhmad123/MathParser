@@ -43,13 +43,7 @@
     <Compile Include="DMASSolver.cs" />
     <Compile Include="ReverseDMASSolver.cs" />
     <Compile Include="UnitFunctionSolver.cs" />
-    <Compile Include="..\..\MatApp\MatApp\cUnderstander.cs">
-      <Link>cUnderstander.cs</Link>
-    </Compile>
     <Compile Include="Solver.cs" />
-    <Compile Include="..\..\MatApp\MatApp\DataTypeSpace.cs">
-      <Link>DataTypeSpace.cs</Link>
-    </Compile>
     <Compile Include="BraketSolver.cs" />
     <Compile Include="Equation.cs" />
   </ItemGroup>
