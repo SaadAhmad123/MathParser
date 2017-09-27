@@ -46,6 +46,7 @@
     <Compile Include="Solver.cs" />
     <Compile Include="BraketSolver.cs" />
     <Compile Include="Equation.cs" />
+    <Compile Include="DigitalLogicSolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+
 using MathParser.DataTypes.DynamicDataTypes;
 using MathParser.DataTypes;
 using System.Collections.Generic;
@@ -126,7 +127,7 @@ namespace MathParser
 
 		public void Parse()    // Parse method.
 		{
-		     bool proceed = MatrixSyntaxChecker();
+		    bool proceed = MatrixSyntaxChecker();
 			if (!proceed)
 			{
 				Processed = false;
@@ -168,9 +169,21 @@ namespace MathParser
 							dynamic mElement = staticOnParse(element.Trim(), ref Processed);
 							theMatrix[irow, icol] = mElement;
 						}
+
 						else
 						{
-							theMatrix[irow, icol] = double.Parse(element.Trim());
+							NonEquation sol = new NonEquation (element.Trim ());
+							sol.History = Checker.History;
+							sol.Solve();
+							Number a;
+							if (sol.isProcessed ()) {
+								MathParserExpression ans = sol.getSolution ();
+								a = ans.Data;
+							} else {
+								Processed = false;
+								throw new MathParserException ("Invalid Entry.");
+							}
+							theMatrix[irow, icol] = (double)a.Data;
 							Processed = true;
 						}
 						if (!Processed)

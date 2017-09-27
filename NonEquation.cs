@@ -1,6 +1,9 @@
 ﻿using System;
 using MathParser.DataTypes;
 using System.Collections.Generic;
+using System.Linq;
+
+
 namespace MathParser
 {
 	/// <summary>
@@ -73,7 +76,7 @@ namespace MathParser
 			}
 
 			theBasicOperatorsString = new string(theBasicOperatorList);
-			theBasicOperatorsString += "`()#";
+			theBasicOperatorsString += "`()#";
 			Checker.OperatorList = theBasicOperatorsString;
 		}    // end Operator syncor functions.
 
@@ -132,6 +135,7 @@ namespace MathParser
 				}
 				// end balancing brakkets
 
+
 				MathParser.BraketSolver sol = new BraketSolver(ExpressionElements,theData);
 				if (sol.isProcessed ()) {
 					Solution = sol.getSolution ();
@@ -150,6 +154,7 @@ namespace MathParser
 				if (theBasicOperatorsString.Contains(ExpressionElements[ExpressionElements.Count - 1]))
 				{
 					Processed = false;
+
 					throw new MathParserException($"Invalid operator entry. No basic operator ({theBasicOperatorList.ToString()}) can be at the end of the expression.");
 				}
 				else {
@@ -178,6 +183,9 @@ namespace MathParser
 				} // end 
 			}  // end
 		}    // end solve
+
+
+
 
 		void Only_Number_And_Operator_List_Maker()
 		{
@@ -225,20 +233,34 @@ namespace MathParser
 		public delegate void KeyWordSyncDelegate(ref List<string>theKeyWordList);
 		public static KeyWordSyncDelegate staticOnKeyWordSync;
 
+		Dictionary<string, string> dumyKeyWordsList = new Dictionary<string, string>();
+
 		void SyncKeyWord() {
 			theKeyWordsList = new List<string> ();
 			staticOnKeyWordSync?.Invoke (ref theKeyWordsList);
+			theKeyWordsList = theKeyWordsList.OrderByDescending(x => x.Length).ToList();
 
-			if (theKeyWordsList != null)
-			{
+			if (theKeyWordsList != null && !givenExpression.Contains("#"))
+			{	
+				int the_counter = 0;
 				foreach (string keyword in theKeyWordsList)
 				{
-				givenExpression = givenExpression.Replace(keyword, "#"+keyword+"`");
+					string key = "¿?" + "internal_matrix_sAADIww___" + the_counter + "¿?";
+					givenExpression = givenExpression.Replace(keyword, "#"+key+"`");
+					dumyKeyWordsList.Add (key, keyword);
+					the_counter ++;
 				}
+
+				foreach (var item in dumyKeyWordsList) {
+					givenExpression = givenExpression.Replace (item.Key, item.Value);
+				}
+
 			}
 			Checker.KeyWords = theKeyWordsList;
 		}
 			
+
+
 
 		void the_Data_List_Maker()
 		{
@@ -251,7 +273,7 @@ namespace MathParser
 						name = autoMatrixNamer ();
 						theData.Add (name, new MathParserExpression (MathParser.DataTypes.DynamicDataTypes.Matrix.Parse (Element.Trim ())));
 					} else if (History != null &&
-					           History.ContainsKey (Element)) {
+					    History.ContainsKey (Element)) {
 						name = autoNumberNamer ();
 						theData.Add (name, new MathParserExpression (History [Element]));
 					} else if (Element.Contains ("@")) {
@@ -265,6 +287,7 @@ namespace MathParser
 							theData.Add (name, new MathParserExpression (MathParser.DataTypes.DynamicDataTypes.Number.Parse (Element.Trim ()))); 
 						}catch{
 							Processed = false;
+
 							throw new MathParserException ($"Invalid entry '{Element}'.");
 						}
 					}

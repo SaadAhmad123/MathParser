@@ -246,6 +246,36 @@ namespace MathParser
 						}
 					}
 
+					if (Element == "^") {
+						if (c == 0) {
+							OperatorHandledCorrectly = false;
+							break;
+						} else if (c == Expressions.Count - 1) {
+							OperatorHandledCorrectly = false;
+							break;
+						} else {
+							if (Expressions [c + 1] == "-" && !BasicOperatorsString.Contains (Expressions [c + 2])) {
+								Expressions [c + 2] = "-" + Expressions [c + 2];	
+								Expressions.RemoveAt (c + 1);
+								c = -1;
+							} else if (Expressions [c + 1] == "-" && Expressions[c+2] == "#" && !BasicOperatorsString.Contains (Expressions [c + 3])) {
+								Expressions [c + 3] = "-" + Expressions [c + 3];	
+								Expressions.RemoveAt (c + 1);
+								Expressions.RemoveAt (c + 1);
+								c = -1;
+							} else if (Expressions [c + 1] == "+" && !BasicOperatorsString.Contains (Expressions [c + 2])) {
+								Expressions.RemoveAt (c + 1);
+								c = -1;
+							} else if (Expressions [c + 1] == "#" && !BasicOperatorsString.Contains (Expressions [c + 2])) {
+								Expressions.RemoveAt (c + 1);
+								c = -1;
+							} else if (BasicOperatorsString.Contains (Expressions [c + 1])) {
+								OperatorHandledCorrectly = false;
+								break;
+							}
+						}
+					}
+
 				}    // end if for operators.
 			}       // end the for loop.
 
@@ -257,4 +287,8 @@ namespace MathParser
 
 	}    // end class
 }
+
+
+
+
 

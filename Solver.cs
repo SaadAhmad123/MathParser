@@ -20,17 +20,20 @@ namespace MathParser
 	{
 		string theExpression;
 		bool saveHistory = false;
-		Dictionary<string, MathParserExpression> History;
+		//Dictionary<string, MathParserExpression> History;
 		MathParserExpression solution;
 		bool Processed = true;
+
 		public SolverOnPrintDelegate<Matrix> OnMatixPrint = delegate { };
 		public SolverOnPrintDelegate<Number> OnNumberPrint = delegate { };
-		public SolverKeyWordsSyncDelegate<List<string>> OnKeyWordsSync = null;
+		public static  SolverKeyWordsSyncDelegate<List<string>> OnKeyWordsSync = null;
+		public static SolverKeyWordsSyncDelegate<List<string>> On_LeftRight_Function_KeyWords_Sync = null;
 		public SolverKeyWordsSyncDelegate<Dictionary<string, MathParserExpression>> OnConstantSync = null;
 		public SolverMatrixFlagSync OnMatrixFlagSync = null;
+		public static UnitFunctionExtentionDelegte On_Single_Argument_KeyWord_Implement = null;
 		//public List<string>theKeyWordsList = new List<string>();
 		//public List<string> 
-
+		List<string> theUnitFunctionKeyWordsList;
 
 		public MathParserExpression getSolution()
 		{
@@ -63,7 +66,31 @@ namespace MathParser
 			theKeyWordList.Add ("arcSin");
 			theKeyWordList.Add ("arcTan");
 			theKeyWordList.Add ("sqrt");
+			theKeyWordList.Add ("round");
+			theKeyWordList.Add ("√");
+			theKeyWordList.Add ("trunc");
+			theKeyWordList.Add ("rref");
+			theKeyWordList.Add ("ref");
+			theKeyWordList.Add ("det");
+			theKeyWordList.Add ("adj");
+			theKeyWordList.Add ("rank");
+			theKeyWordList.Add ("inv");
+			theKeyWordList.Add ("transp");
+			theKeyWordList.Add ("rootByBisection_polynomial");
+			theKeyWordList.Add ("rootByRFM_polynomial");
+			theKeyWordList.Add ("rootByNRM_polynomial");
+			theKeyWordList.Add ("rootBySM_polynomial");
 			OnKeyWordsSync?.Invoke (ref theKeyWordList);
+			theUnitFunctionKeyWordsList = theKeyWordList;
+		}
+
+
+
+
+		void LeftRightList (ref List<string> theList)
+		{
+			theList.Add ("P");
+			theList.Add ("C"); 
 		}
 
 		void ConstantList(ref Dictionary<string , MathParserExpression> ConstantList)
@@ -85,6 +112,8 @@ namespace MathParser
 			Number.staticOnPrint = (Number number) => {
 				OnNumberPrint?.Invoke(number);
 			};
+
+			//DigitalLogicSolver.syncKeyWords ();
 
 			NonEquation.staticOnKeyWordSync += KeyWordsList;
 			NonEquation.staticOnConstantSync += ConstantList;
@@ -124,7 +153,9 @@ namespace MathParser
 				Processed = false;
 				throw new Exception ("The given Expression doen not contain any information.");
 			}
-
+			if (theExpression.Contains ("rref")) {
+				//theExpression = theExpression.Replace ("rref","reducedRowEchelonForm");
+			}
 		}
 
 		public void setMathExpression(string theExpression)
@@ -143,24 +174,27 @@ namespace MathParser
 				Processed = false;
 				throw new Exception ("The given Expression doen not contain any information.");
 			}
+			if (theExpression.Contains ("rref")) {
+				//this.theExpression = theExpression.Replace ("rref","reducedRowEchelonForm");
+			}
 		}
 
 		public void SaveHistory()
 		{
 			saveHistory = true;
-			History = new Dictionary<string, MathParserExpression> ();
+			Checker.History = new Dictionary<string, MathParserExpression> ();
 		}
 
 		public void ClearHistory()
 		{
-			History.Clear ();
+			Checker.History.Clear ();
 		}
 
-		public Dictionary<string, MathParserExpression> getHistory () => History;
+		public Dictionary<string, MathParserExpression> getHistory () => Checker.History;
 
 		public void Solve()
 		{
-			MathParser.StringObserver sol = new StringObserver (theExpression,History);
+			MathParser.StringObserver sol = new StringObserver (theExpression,Checker.History);
 			if (sol.isProcessed ()) {
 				solution = sol.getSolution ();
 			} else {
@@ -176,21 +210,21 @@ namespace MathParser
 						string name = autoNumberNamer ();
 						solution.Tag = name;
 						solution.setEntireTag (name);
-						History.Add (name, solution);
+						Checker.History.Add (name, solution);
 					} else if (solution.Type.Contains ("Matrix")) {
 						string name = autoMatrixNamer ();
 						solution.Tag = name;
 						solution.setEntireTag (name);
-						History.Add (name, solution);
+						Checker.History.Add (name, solution);
 					}
 				} else {
 					string name = solution.Tag;
-					if (History.ContainsKey (name)) {
+					if (Checker.History.ContainsKey (name)) {
 					//	solution.setEntireTag (name);
-						History [name] = solution;
+						Checker.History [name] = solution;
 					} else {
 					//  solution.setEntireTag (name);
-						History.Add (name, solution);
+						Checker.History.Add (name, solution);
 					}
 				}
 			}
@@ -200,9 +234,9 @@ namespace MathParser
 		public void PrintSolution()
 		{
 			if (solution.Type.Contains ("Number")) {
-				((MathParser.DataTypes.DynamicDataTypes.Number)solution.Data).Print ();
+				((MathParser.DataTypes.DynamicDataTypes.Number)solution.Data)?.Print ();
 			} else if (solution.Type.Contains ("Matrix")) {
-				((MathParser.DataTypes.DynamicDataTypes.Matrix)solution.Data).Print ();
+				((MathParser.DataTypes.DynamicDataTypes.Matrix)solution.Data)?.Print ();
 			}
 		}
 
@@ -211,7 +245,7 @@ namespace MathParser
 		{
 			ncount++;
 			string name = "n" + ncount;
-			if (!History.ContainsKey (name)) {
+			if (!Checker.History.ContainsKey (name)) {
 				return name;
 			} else {
 				return autoNumberNamer ();
@@ -224,12 +258,30 @@ namespace MathParser
 		{
 			mcount++;
 			string name = "m" + mcount;
-			if (!History.ContainsKey (name)) {
+			if (!Checker.History.ContainsKey (name)) {
 				return name;
 			} else {
 				return autoMatrixNamer ();
 			}
 		}
+			
+		/*public bool theExpressionContainsDigitalLogic()
+		{
+			List<string> theDigitalKeyWords = DigitalLogicSolver.getKeyWordsList ();
+			foreach(var x in theDigitalKeyWords){
+				if (theExpression.Contains (x)) {
+					return true;					
+				}
+			}
+			return false;
+		}*/
+
+
+		public List<string> getUnitFunctionList()
+		{
+			return theUnitFunctionKeyWordsList;	
+		}
+
 
 	}
 }

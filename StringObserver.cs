@@ -19,8 +19,8 @@ namespace MathParser
 		public MathParserExpression getSolution() => Solution;
 		public bool isProcessed() => Processed;
 		Dictionary<string, MathParserExpression> History;
-		Dictionary<string, MathParserExpression> theExpressionListHistory = new Dictionary<string, MathParserExpression>();
-	
+		Dictionary<string, MathParserExpression> theExpressionListHistory = new Dictionary<string, MathParserExpression> ();
+
 		public StringObserver(string String_To_Interpret, Dictionary<string, MathParserExpression> History) {
 
 			this.History = History;

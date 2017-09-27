@@ -138,14 +138,14 @@ namespace MathParser
 								} else {
 									Processed = false;
 									done = false;
-									throw new Exception ("Invalid row and column matrix addition.");
+									throw new MathParserException ("Invalid row and column matrix addition.");
 								}
 							} else {
 								if (onAddition != null && onAddition (lhs, rhs, theData, Expressions, autoNamer (),c)) {
 								} else {
 									Processed = false;
 									done = false;
-									throw new Exception ("Invalid data types addition.");
+									throw new MathParserException ("Invalid data types addition.");
 								}
 							}
 						} else {
@@ -153,7 +153,7 @@ namespace MathParser
 							} else {
 								Processed = false;
 								done = false;
-								throw new Exception ("Invalid data types addition.");
+								throw new MathParserException ("Invalid data types addition.");
 							}
 						}
 						Expressions.RemoveRange(c,2);
@@ -173,8 +173,9 @@ namespace MathParser
 				{
 					if (Expressions[c] == "*" || Expressions[c] == multiply_cross)
 					{
-						MathParserExpression rhs = theData[Expressions[c + 1]];
-						MathParserExpression lhs = theData[Expressions[c - 1]];
+						MathParserExpression rhs = theData[Expressions[c + 1].Trim("-".ToCharArray())
+						];
+						MathParserExpression lhs = theData[Expressions[c - 1].Trim("-".ToCharArray())];
 
 						if (rhs.Type == lhs.Type) {
 							if (rhs.Type.Contains ("Number")) {
@@ -212,13 +213,13 @@ namespace MathParser
 								} else {
 									Processed = false;
 									done = false;
-									throw new Exception ("Invalid matrix multiplication.");
+									throw new MathParserException ("Invalid matrix multiplication.");
 								}
 							} else if (onMuliplication != null && onMuliplication (lhs, rhs, theData, Expressions, autoNamer (),c)) {
 							} else {
 								Processed = false;
 								done = false;
-								throw new Exception ("Invalid multiplication.");
+								throw new MathParserException ("Invalid multiplication.");
 							}
 						} else if (lhs.Type.Contains ("Number") && rhs.Type.Contains ("Matrix")) {
 							if (Expressions [c + 1].Contains ("-")) {
@@ -259,7 +260,7 @@ namespace MathParser
 							} else {
 								Processed = false;
 								done = false;
-								throw new Exception ("Not a valid multiplication.");
+								throw new MathParserException ("Not a valid multiplication.");
 							}
 						}
 						Expressions.RemoveRange(c, 2);
@@ -319,7 +320,7 @@ namespace MathParser
 							} else {
 								Processed = false;
 								done = false;
-								throw new Exception ("Invalid Division.");
+								throw new MathParserException ("Invalid Division.");
 							}
 						}
 
@@ -342,26 +343,44 @@ namespace MathParser
 						MathParserExpression rhs = theData [Expressions [c + 1].Trim ("-".ToCharArray ())];
 
 						if (lhs.Type.Contains ("Number") && rhs.Type.Contains ("Number")) {
-							if (Expressions [c + 1].Contains ("-")) {
-								rhs = new MathParserExpression (rhs.Data * new Number (-1));
-								Expressions [c + 1].Replace ("-", "");
-							}
+							if (lhs.Data.Data == (double)Math.E) {
+								if (Expressions [c + 1].Contains ("-")) {
+									rhs = new MathParserExpression (rhs.Data * new Number (-1));
+									Expressions [c + 1].Replace ("-", "");
+								}
 
-							Number ans = new Number (Math.Pow ((double)((Number)lhs.Data).Data, (double)((Number)rhs.Data).Data));
+								Number ans = new Number (Math.Exp ((double)((Number)rhs.Data).Data));
+
+								if (Expressions [c - 1].Contains ("-")) {
+									ans = ans * new Number (-1);
+								}
+
+								string name = autoNamer ();
+								Expressions [c - 1] = name;
+								theData.Add (name, new MathParserExpression (ans));
+
+							} else {
+								if (Expressions [c + 1].Contains ("-")) {
+									rhs = new MathParserExpression (rhs.Data * new Number (-1));
+									Expressions [c + 1].Replace ("-", "");
+								}
+
+								Number ans = new Number (Math.Pow ((double)((Number)lhs.Data).Data, (double)((Number)rhs.Data).Data));
 						
-							if (Expressions [c - 1].Contains ("-")) {
-								ans = ans * new Number (-1);
-							}
+								if (Expressions [c - 1].Contains ("-")) {
+									ans = ans * new Number (-1);
+								}
 
-							string name = autoNamer ();
-							Expressions [c - 1] = name;
-							theData.Add (name, new MathParserExpression (ans));
+								string name = autoNamer ();
+								Expressions [c - 1] = name;
+								theData.Add (name, new MathParserExpression (ans));
+							}
 						} else {
 							if (onOrder != null && onOrder (lhs, rhs, theData, Expressions, autoNamer (), c)) {
 							} else {
 								Processed = false;
 								done = false;
-								throw new Exception ("Invalid base and exponent.");
+								throw new MathParserException ("Invalid base and exponent.");
 							}
 						}
 						Expressions.RemoveRange (c,2);

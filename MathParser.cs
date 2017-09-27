@@ -1,5 +1,6 @@
 ﻿using System;
 using MathParser.DataTypes;
+using System.Collections.Generic;
 
 namespace MathParser
 {
@@ -13,6 +14,8 @@ namespace MathParser
 		MathParserExpression getSolution();
 		bool isProcessed();
 	}
+
+	public delegate void UnitFunctionExtentionDelegte(string command, MathParserExpression value, ref MathParserExpression solution, ref bool Processed);
 
 	public class MathParserException: Exception
 	{

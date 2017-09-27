@@ -45,7 +45,8 @@ namespace MathParser
 		public static List<string> KeyWords;
 		public static string OperatorList;
 		public static Dictionary<string, MathParserExpression> Constants = new Dictionary<string, MathParserExpression>();
-
+		public static Dictionary<string, MathParserExpression> History = new Dictionary<string, MathParserExpression> ();
+		public static List<string> LeftRightFunctionKeywords = new List<string>();
 		public static bool ifContainOperation(string Exp, string theBasicOperators)
 		{
 			string dumy = Exp;
