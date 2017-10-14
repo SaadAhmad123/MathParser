@@ -78,9 +78,7 @@ namespace MathParser
 
 			theBasicOperatorsString = new string(theBasicOperatorList);
 			theBasicOperatorsString += "`()#";
-
 			Checker.OperatorList = theBasicOperatorsString;
-
 		}    // end Operator syncor functions.
 
 		public void Solve()   // the method deals with the prelimanry making of the Expression Understading.

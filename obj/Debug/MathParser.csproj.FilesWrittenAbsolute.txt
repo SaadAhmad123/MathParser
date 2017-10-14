@@ -3,3 +3,5 @@
 /Users/apple/Projects/MathParser/MathParser/bin/Debug/MathParser.dll
 /Users/apple/Projects/MathParser/MathParser/obj/Debug/MathParser.dll
 /Users/apple/Projects/MathParser/MathParser/obj/Debug/MathParser.dll.mdb
+/Users/apple/Projects/MathParser/MathParser/bin/Debug/MathParser.pdb
+/Users/apple/Projects/MathParser/MathParser/obj/Debug/MathParser.pdb

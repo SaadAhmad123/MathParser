@@ -15,6 +15,7 @@ namespace MathParser
 		bool isProcessed();
 	}
 
+
 	public delegate void UnitFunctionExtentionDelegte(string command, MathParserExpression value, ref MathParserExpression solution, ref bool Processed);
 
 	public class MathParserException: Exception

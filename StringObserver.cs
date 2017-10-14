@@ -32,10 +32,45 @@ namespace MathParser
 			}
 		}
 
+
+		bool isOverdrive(string exp)
+		{
+			if (!exp.Contains ("@")) {
+				return false;
+			}
+			string nExp = exp.TrimStart(new char[] { '@' });
+			if (exp.Length - nExp.Length == 1)
+			{
+				if (nExp.Contains("@"))
+				{
+					throw new MathParser.MathParserException($"Cannot Parse the expression. Make sure to add just one '@' on the " +
+						"start of overdrive expression and donot add '@' in any other place in the" +
+						"expression. If you don't want to use overdrive do not write '@' in the expression");
+				}else{return true;}
+			}else{
+				throw new MathParser.MathParserException($"Unable to understand expression '{exp}'. For MathParser overdrive " +
+					"only add one '@' at the start of the 'overdrive expression'");
+			}
+		}
+
+
 		private void Interpret()
 		{
-			if (!givenString.Contains("="))
+
+
+			if(isOverdrive(givenString)){
+				MathParserOverdrive mpo = new MathParserOverdrive(givenString.TrimStart(new char[] { '@' }));
+				mpo.Solve();
+				if(isProcessed()){
+					Solution = mpo.getSolution();
+					Processed = true;
+					return;
+				}
+			}
+
+			else if (!givenString.Contains("="))
 			{
+				
 				NonEquation solve = new NonEquation (givenString);
 				solve.History = History;
 				solve.Solve ();
@@ -49,8 +84,7 @@ namespace MathParser
 				}
 			}
 			else
-			{ 
-
+			{
 				Equation sol = new Equation (givenString);
 				sol.theHistory = History;
 				sol.Solve ();
