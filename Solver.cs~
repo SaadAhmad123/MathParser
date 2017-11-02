@@ -50,6 +50,8 @@ namespace MathParser
 			if (theKeyWordList.Count != 0) {
 				return;
 			}
+			theKeyWordList.Add("degToRad");
+			theKeyWordList.Add("radToDeg");
 			theKeyWordList.Add("sin");
 			theKeyWordList.Add("cos");
 			theKeyWordList.Add("tan");
@@ -83,8 +85,12 @@ namespace MathParser
 			theKeyWordList.Add("rootByRFM_polynomial");
 			theKeyWordList.Add("rootByNRM_polynomial");
 			theKeyWordList.Add("rootBySM_polynomial");
-			theKeyWordList.Add("linearFit_XY");
-			theKeyWordList.Add("polynomialFit_XY");
+			theKeyWordList.Add("linearFit_XY");			// y = ax + b
+			theKeyWordList.Add("polynomialFit_XY");  	// y = ax^2 + bx + c
+			theKeyWordList.Add("exponentialFit_XY"); 	// y = a*e^bx
+			theKeyWordList.Add("geometricFit_XY");      // y = a*x^b
+			theKeyWordList.Add("linearFit_ND");         // y = a1x1 + a2x2 + a3x3 + ... + aNxN
+			theKeyWordList.Add("interpolationByNFIM");    // This function does the Newton Foreard Interpolation.
 			OnKeyWordsSync?.Invoke(ref theKeyWordList);
 			theUnitFunctionKeyWordsList = theKeyWordList;
 		}
@@ -174,9 +180,11 @@ namespace MathParser
 				Processed = false;
 				throw new Exception("The given Expression doen not contain any information.");
 			}
-			if (theExpression.Contains("rref"))
+			if (theExpression.Contains("E"))
 			{
+				this.theExpression = theExpression.Replace ("E", "*10^");
 				//theExpression = theExpression.Replace ("rref","reducedRowEchelonForm");
+
 			}
 		}
 
@@ -199,8 +207,10 @@ namespace MathParser
 				Processed = false;
 				throw new Exception("The given Expression doen not contain any information.");
 			}
-			if (theExpression.Contains("rref"))
+			if (theExpression.Contains("E"))
 			{
+				this.
+				theExpression = theExpression.Replace ("E", "*10^");
 				//this.theExpression = theExpression.Replace ("rref","reducedRowEchelonForm");
 			}
 		}

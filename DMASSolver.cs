@@ -188,7 +188,7 @@ namespace MathParser
 									Expressions [c - 1].Replace ("-", "");
 								}
 
-								Number ans = rhs.Data * lhs.Data;
+								Number ans = lhs.Data * rhs.Data;
 								string name = autoNamer ();
 								Expressions [c - 1] = name;
 								theData.Add (name, new MathParserExpression (ans));
@@ -206,7 +206,7 @@ namespace MathParser
 								Matrix mlhs = lhs.Data;
 
 								if (mrhs.Rows == mlhs.Columns) {
-									Matrix ans = rhs.Data * lhs.Data;
+									Matrix ans = lhs.Data * rhs.Data;
 									string name = autoNamer ();
 									Expressions [c - 1] = name;
 									theData.Add (name, new MathParserExpression (ans));

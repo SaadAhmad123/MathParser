@@ -51,7 +51,29 @@ namespace MathParser
 
 		void Solve()
 		{
-			if (command == "sin")
+			if(command == "degToRad"){
+				if(value.Type.Contains("Number"))
+				{
+					double num = ((Number)value.Data).Data;
+					solution = new MathParser.DataTypes.MathParserExpression(new Number((double)num * Math.PI / 180));
+				}
+				else{
+					Processed = false;
+					throw new MathParser.MathParserException("Invalid function arguments");
+				}
+			}
+			else if (command == "radToDeg"){
+				if(value.Type.Contains("Number"))
+				{
+					double num = ((Number)value.Data).Data;
+					solution = new MathParser.DataTypes.MathParserExpression(new Number((double)num * 180/Math.PI));
+				}
+				else{
+					Processed = false;
+					throw new MathParser.MathParserException("Invalid function arguments");
+				}
+			}
+			else if (command == "sin")
 			{      // for sin function.
 				if (value.Type.Contains("Number"))
 				{
@@ -65,7 +87,7 @@ namespace MathParser
 						}
 						else
 						{
-							ans = Math.Sin(num * Math.PI / 180);
+							ans = Math.Sin(num);
 						}
 					}
 					else if (num < 0)
@@ -76,12 +98,12 @@ namespace MathParser
 						}
 						else
 						{
-							ans = Math.Sin(num * Math.PI / 180);
+							ans = Math.Sin(num);
 						}
 					}
 					else
 					{         // for the number to be zero.
-						ans = Math.Sin(num * Math.PI / 180);
+						ans = Math.Sin(num);
 					}
 					solution = new MathParserExpression(new Number((double)ans));  // solution make.
 				}
@@ -96,7 +118,7 @@ namespace MathParser
 			{    // for cos command.
 				if (value.Type.Contains("Number"))
 				{
-					double radian = ((Number)value.Data).Data * Math.PI / 180;
+					double radian = ((Number)value.Data).Data;
 					double num = ((Number)value.Data).Data;
 					double ans = 0;
 					if (num > 0)
@@ -138,7 +160,7 @@ namespace MathParser
 
 				if (value.Type.Contains("Number"))
 				{     // if there is a number.
-					double radian = (double)(((Number)value.Data).Data) * Math.PI / 180;
+					double radian = (double)(((Number)value.Data).Data);
 					double num = (double)(((Number)value.Data).Data);
 					double ans = 0;
 					if (num > 0)
@@ -189,7 +211,7 @@ namespace MathParser
 			{
 				if (value.Type.Contains("Number"))
 				{
-					double radian = (double)(((Number)value.Data).Data) * Math.PI / 180;
+					double radian = (double)(((Number)value.Data).Data);
 					double num = (double)(((Number)value.Data).Data);
 					double ans = 0;
 					if (num > 0)
@@ -241,7 +263,7 @@ namespace MathParser
 				if (value.Type.Contains("Number"))
 				{
 					double num = (double)(((Number)value.Data).Data);
-					double radian = num * Math.PI / 180;
+					double radian = num;
 					double ans = 0;
 					if (num > 0)
 					{    //for +ive number.
@@ -294,7 +316,7 @@ namespace MathParser
 						}
 						else
 						{
-							ans = 1 / Math.Sin(num * Math.PI / 180);
+							ans = 1 / Math.Sin(num);
 						}
 					}
 					else if (num < 0)
@@ -306,12 +328,12 @@ namespace MathParser
 						}
 						else
 						{
-							ans = 1 / Math.Sin(num * Math.PI / 180);
+							ans = 1 / Math.Sin(num);
 						}
 					}
 					else
 					{         // for the number to be zero.
-						ans = 1 / Math.Sin(num * Math.PI / 180);
+						ans = 1 / Math.Sin(num);
 					}
 					solution = new MathParserExpression(new Number((double)ans));  // solution make.
 				}
@@ -770,6 +792,10 @@ namespace MathParser
 				{
 					if (value.Data.Rows == 2)
 					{
+						if(value.Data.Columns < 2){
+							Processed = false;
+							throw new MathParser.MathParserException("The amount of data is very less");
+						}
 						Matrix matrix = value.Data;
 						linearFit_XY lfxy = new linearFit_XY(ref matrix);
 						lfxy.Solve();
@@ -788,6 +814,10 @@ namespace MathParser
 				{
 					if (value.Data.Rows == 2)
 					{
+						if(value.Data.Columns < 2){
+							Processed = false;
+							throw new MathParser.MathParserException("The amount of data is very less");
+						}
 						Matrix matrix = value.Data;
 						polynomialFit_XY lfxy = new polynomialFit_XY(ref matrix);
 						lfxy.Solve();
@@ -803,6 +833,111 @@ namespace MathParser
 				{
 					Processed = false;
 					throw new MathParser.MathParserException("Invalid function argument");
+				}
+			}
+			else if (command == "exponentialFit_XY")
+			{
+				if (value.Type.Contains("Matrix"))
+				{
+					if (value.Data.Rows == 2)
+					{
+						if(value.Data.Columns < 2){
+							Processed = false;
+							throw new MathParser.MathParserException("The amount of data is very less");
+						}
+						Matrix matrix = value.Data;
+						exponentialFit_XY lfxy = new exponentialFit_XY(ref matrix);
+						lfxy.Solve();
+						solution = new MathParser.DataTypes.MathParserExpression(lfxy.getSolution());
+					}
+					else
+					{
+						Processed = false;
+						throw new MathParser.MathParserException("Invalid function argument");
+					}
+				}
+				else
+				{
+					Processed = false;
+					throw new MathParser.MathParserException("Invalid function argument");
+				}
+			}
+			else if (command == "geometricFit_XY")
+			{
+				if (value.Type.Contains("Matrix"))
+				{
+					if (value.Data.Rows == 2)
+					{
+						if(value.Data.Columns < 2){
+							Processed = false;
+							throw new MathParser.MathParserException("The amount of data is very less");
+						}
+						Matrix matrix = value.Data;
+						geometricFit_XY lfxy = new geometricFit_XY(ref matrix);
+						lfxy.Solve();
+						solution = new MathParser.DataTypes.MathParserExpression(lfxy.getSolution());
+					}
+					else
+					{
+						Processed = false;
+						throw new MathParser.MathParserException("Invalid function argument");
+					}
+				}
+				else
+				{
+					Processed = false;
+					throw new MathParser.MathParserException("Invalid function argument");
+				}
+			}
+			else if (command == "linearFit_ND")
+			{
+				if (value.Type.Contains("Matrix"))
+				{
+					if (value.Data.Rows > 1)
+					{
+						if(value.Data.Columns < 2){
+							Processed = false;
+							throw new MathParser.MathParserException("The amount of data is very less");
+						}
+						Matrix matrix = value.Data;
+						linearFit_ND lfxy = new linearFit_ND(ref matrix);
+						lfxy.Solve();
+						solution = new MathParser.DataTypes.MathParserExpression(lfxy.getSolution());
+					}
+					else
+					{
+						Processed = false;
+						throw new MathParser.MathParserException("Invalid function argument");
+					}
+				}
+				else
+				{
+					Processed = false;
+					throw new MathParser.MathParserException("Invalid function argument");
+				}
+			}else if(command == "interpolationByNFIM"){
+				if(value.Type.Contains("Matrix")){
+					if (value.Data.Rows != 4)
+					{
+						throw new MathParser.MathParserException("4 argument rows expected -> [x_values; y_values; interpolation_index; value_of_X_to_which_Y_is_to_be_found]");
+					}
+					else {
+						Matrix m = value.Data;
+						newtonForwardInterpolationMethod nfim = new newtonForwardInterpolationMethod(ref m);
+						nfim.Solve();
+						solution = new MathParser.DataTypes.MathParserExpression(new Number(nfim.getSolution()));
+					}
+				}else{
+					throw new MathParser.MathParserException("Invalid function argument");
+				}
+			}else if(command == "factorial"){
+				if(value.Type.Contains("Number")){
+					double number = value.Data;
+					Factorial f = new Factorial(number);
+					f.Solve();
+					solution = new MathParser.DataTypes.MathParserExpression(new Number(f.getSolution()));
+				}else{
+					throw new MathParserException("Invalid function arguments");
 				}
 			}
 			else if (Solver.On_Single_Argument_KeyWord_Implement != null)
@@ -824,12 +959,214 @@ namespace MathParser
 
 
 
+	public class linearFit_ND{
+
+		Matrix matrix, ans;
+		public linearFit_ND(){}
+		public linearFit_ND(ref Matrix matrix){
+			this.matrix = matrix;
+		}
+
+		public void Solve(){
+			int n = matrix.Columns;
+			int calRow = matrix.Rows, calCol = matrix.Rows + 1;
+			Matrix cal = new Matrix(calRow, calCol);
+			cal[0, 0] = (double)n;
+			for (int c = 0; c < n; c++) {
+				for (int c2 = 0; c2 < matrix.Rows; c2++) {
+					cal [0, c2 + 1] = cal [0, c2 + 1] + matrix [c2, c];
+					if (c2 != 0) {
+						cal [c2, 0] = cal [c2, 0] + matrix [c2 - 1, c];
+					}
+				}
+			}
+			for (int i = 0; i < matrix.Columns; i++) {
+				int mr = 0;
+				for (int r = 1; r < calRow; r++) {
+					for (int c = 1; c < calCol; c++) {
+						cal [r, c] = cal [r, c] + (matrix [mr, i] * matrix [c - 1, i]);
+					}
+					mr++;
+				}
+			}
+
+			cal = cal.ReducedRowEchelonForm ();
+			ans = new Matrix (2, calRow);
+			for (int c = 1; c < calRow; c++) {
+				ans [0, c-1] = cal [c, cal.Columns - 1];
+			}
+			ans [0, ans.Columns - 1] = cal [0, cal.Columns - 1];
+
+			// Error
+
+			double e = 0;
+
+			for(int i = 0; i < matrix.Columns; i++){
+				double err = 0;
+				for (int c = ans.Columns - 1; c >= 0; c--) {
+					if (c == ans.Columns - 1) {
+						err += ans [0, c];
+					} else {
+						err += ans [0, c] * matrix [c , i];
+					}
+				}
+				err = matrix [matrix.Rows - 1, i] - err;
+				e += err * err;
+			}
+
+
+			ans [1, 0] = e;
+
+		}
+
+
+		public Matrix getSolution(){
+			return ans;
+		}
+
+	}
+
+
+
+
+
+
+
+	/// <summary>
+	/// Geometric fit xy.
+	/// This class gets the data set X and Y;
+	/// and calculate an geometric Fit of 
+	/// that data. The matix must strictly have only
+	/// 2 Rows i.e. [x1, x2, ..., xN; y1, y2, ..., yN]
+	/// 
+	/// It uses the function Solve to initiate
+	/// the solution calculation and make result
+	/// 	
+	/// After the using the getSolution function
+	/// we can get matrix [a,b] where y = a*x^b
+	/// which is the linear Fit of the given 
+	/// data
+	/// </summary>
+	public class geometricFit_XY{
+
+		Matrix matrix, ans;
+		public geometricFit_XY(){}
+		public geometricFit_XY(ref Matrix matrix){
+			this.matrix = matrix;
+		}
+
+		public void Solve(){
+			// Here, 
+			// c1 = sum : 1 to n -> (log(y) = Y)
+			// c2 = sum : 1 to n -> (log(x) = X)
+			// c3 = sum : 1 to n -> (log(x) * log(y) = XY)
+			// c4 = sum : 1 to n -> (log(x) * log(x) = X^2)
+			// Equation :-
+			//		c1 = nA + bc2
+			//		c3 = Ac2 + bc4
+			// Where :-
+			//		a = antilog(A)
+			double c1 = 0, c2 = 0, c3 = 0, c4 = 0, n = matrix.Columns;
+			for (int c = 0; c < n; c++)
+			{
+				double x = matrix[0, c], y = matrix[1, c];
+				c1 += Math.Log10(y);
+				c2 += Math.Log10(x);
+				c3 += Math.Log10(x) * Math.Log10(y);
+				c4 += Math.Log10(x) * Math.Log10(x);
+			}
+
+			Matrix m = new Matrix(new dynamic[,] { { n, c2, c1 }, { c2, c4, c3 } }, 2, 3);
+			m = m.ReducedRowEchelonForm();
+			ans = new Matrix(new dynamic[,] { { Math.Pow(10, m[0, 2]), m[1, 2] } }, 1, 2);
+		}
+
+		public Matrix getSolution(){
+			return ans;
+		}
+
+	}
+
+
+
+
+
+
+
+	/// <summary>
+	/// Exponential fit xy.
+	/// This class gets the data set X and Y;
+	/// and calculate an exponential Fit of 
+	/// that data. The matix must strictly have only
+	/// 2 Rows i.e. [x1, x2, ..., xN; y1, y2, ..., yN]
+	/// 
+	/// It uses the function Solve to initiate
+	/// the solution calculation and make result
+	/// 	
+	/// After the using the getSolution function
+	/// we can get matrix [a,b] where y = ae^(bx)
+	/// which is the linear Fit of the given 
+	/// data
+	/// </summary>
+	public class exponentialFit_XY{
+		Matrix matrix, ans;
+		public exponentialFit_XY(){}
+		public exponentialFit_XY(ref Matrix matrix){
+			this.matrix = matrix;
+		}
+
+		public void Solve(){
+			// Here.
+			// c1 = sum : 1 to n -> (log(y) => Y)
+			// c2 = sum : 1 to n -> (x)
+			// c3 = sum : 1 to n -> (x * log(y) => xY)
+			// c4 = sum : 1 to n -> (x^2)
+			// Equation :-
+			// 		c1 = nA + Bc2
+			//		c3 = Ac2 + Bc4
+			// Form :- 
+			//		Y = A + Bx
+			// Now :-
+			//		a = antilog(A)
+			//		b = B / log(e)
+			// Matric :-
+			// 		| n		c2 	:	c1 |
+			//		| c2	c4	:	c3 |
+			double c1 = 0, c2 = 0, c3 = 0, c4 = 0, n = matrix.Columns;
+			for (int c = 0; c < n; c++)
+			{
+				double y = matrix[1, c], x = matrix[0, c];
+				c1 += Math.Log10((double)y);
+				c2 += x;
+				c3 += x * Math.Log10((double)y);
+				c4 += x * x;
+			}
+			Matrix m = new Matrix(new dynamic[,] { { n, c2, c1 }, { c2, c4, c3 } }, 2, 3);
+			m = m.ReducedRowEchelonForm();
+
+			ans = new Matrix(new dynamic[,] { { Math.Pow(10, m[0, 2]) ,m[1, 2]/Math.Log10(Math.E)} }, 1, 2);
+		}
+
+
+		public Matrix getSolution(){
+			return ans;
+		}
+	}
+
+
+
+
+
+
+
+
 	/// <summary>
 	/// Polynomial fit xy.
 	/// This class gets the data set X,Y and
 	/// calculate the polynomial fit for the 
 	/// data. The matrix must strictly have only 2
 	/// Rows i.e. [x1, x2, ..., xN; y1, y2, ..., yN]
+	/// 
 	/// It uses the function Solve to initiate
 	/// the solution calculation and make result
 	/// 
@@ -1089,10 +1426,14 @@ namespace MathParser
 				if (i != 0) {
 					r = getRootInterval (r,1);		
 				}
+
+				Console.WriteLine ($"x0 = {r[0]}, x1 = {r[1]}");
+
 				double a0 = pe.Eval (r [0]);
 				double a1 = pe.Eval (r [1]);
 				x2 = ((r [0] * a1) - (r [1] * a0)) / (a1 - a0);
 				double a2 = pe.Eval (x2);
+				Console.WriteLine ($"ans = {x2}");
 				if (a2 < 0) {
 					r [0] = x2;
 				} else if (a2 > 0) {
@@ -1100,7 +1441,8 @@ namespace MathParser
 				} else {
 					return x2;
 				}
-				double err = Math.Pow((x2 - x2_old)/x2,2);
+				double err = Math.Pow((x2 - x2_old)/x2,1);
+				Console.WriteLine ($"err = {err}");
 				if (err < precision) {
 					break;
 				}
@@ -1288,6 +1630,103 @@ namespace MathParser
 			return getRootInterval (range, itrr - 1, numberOfSteps);
 		}
 	}
+
+	public class Factorial{
+
+		double number,solution;
+		public Factorial(){}
+		public Factorial(double num){
+			number = num;
+			solution = 1;
+		}
+
+		public void Solve(){
+
+			for (int i = 1; i <= number; i++)
+			{
+				solution = solution * i;
+			}
+		}
+
+		public double getSolution() { return solution;}
+
+	}
+
+
+
+	/// <summary>
+	/// Newton forward interpolation method.
+	/// 
+	/// This function does the newton forward interpolation in 
+	/// two diamensions (X, Y).
+	/// 
+	/// It takes the matrix with following characteristics :
+	/// 
+	/// [row1 -> x_values; 
+	///  row2 -> y_values; 
+	///  row3 -> interpolation_index; 
+	///  row4 -> the value of X to find Y]
+	/// 
+	/// </summary>
+
+
+
+	public class newtonForwardInterpolationMethod{
+
+		Matrix matrix;
+		Matrix sol_mat;
+		double solution;
+		public double getSolution(){return solution;}
+		public newtonForwardInterpolationMethod(){}
+		public newtonForwardInterpolationMethod(ref Matrix mat){
+			matrix = mat;
+			solution = 0;
+		}
+
+		public void Solve(){
+			int col = matrix.Columns;
+			int rows = matrix.Rows;
+			int interpolation_index = (int)matrix[2, 0]; // This parameter defines the polynomial of interpolation e.g. 1 means linear equation, 2 means x^2 + x + c, 3 means x^3 + x^2 + x + c and so on.
+														 // This is limited to the number of data points. E.G. if 10 data points (X,Y) are given then polynomial of interpolation can be atmost 10
+
+			if(interpolation_index > col - 1){
+				throw new MathParser.MathParserException("Invalid interpolation index -> must be less than or equal to the number of data points");
+			}else if(interpolation_index < 2){
+				throw new MathParser.MathParserException("Interpolation Index cannot be equal to or less than 1");
+			}
+
+			double valueOf_X_toFind = matrix[3, 0];
+			sol_mat = new Matrix(col, col);
+			for (int c = 0; c < col; c++){
+				for (int c1 = 0; c1 < col - c; c1++){
+					if(c == 0){
+						sol_mat[c1, c] = matrix[1, c1];
+					}else if(c1+1 < col){
+						sol_mat[c1, c] = - sol_mat[c1, c - 1] + sol_mat[c1 + 1, c - 1];
+					}
+				}
+			}
+
+			double P = (valueOf_X_toFind - matrix[0, 0])/(Math.Abs(matrix[0,1]-matrix[0,0]));
+
+			double yP = sol_mat[0,0];
+			for (int c = 1; c <= interpolation_index; c++){
+				double new_p = P;
+				for (int c1 = 1; c1 < c;c1++){
+					new_p = new_p * (P - c1);
+				}
+				Factorial f = new Factorial(c);
+				f.Solve();
+
+				yP = yP + ((new_p * sol_mat[0, c]) / f.getSolution());
+			}
+
+			solution = yP;
+
+		}
+
+	}
+
 
 
 
